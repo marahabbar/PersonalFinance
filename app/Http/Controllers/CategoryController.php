@@ -36,15 +36,15 @@ class CategoryController extends Controller
       
        }
     
-    public function max_amount_update(int $id,Request $request){
-     Category::where('id',$id)
+    public function max_amount_update(int $id,int $user_id,Request $request){
+     Category::where('id',$id+(24*($user_id-1)))
                 ->update([
                     'max_amount'=> $request->max_amount
 
                 ]);
 
      
-        return $this->category_show($id);
+        return $this->category_show($id+(24*($user_id-1)));
       
     }   
 

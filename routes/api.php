@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Illuminate\Http\Request;
@@ -54,10 +56,9 @@ Route::delete('saving_goal_delete/{id}', 'SavingGoalController@saving_goal_delet
 Route::apiResource('categories','CategoryController');
 Route::get('category_show/{id}', 'CategoryController@Category_show');
 Route::get('categories_show/{user_id}', 'CategoryController@Categories_show');
-//Route::post('categories_store', 'CategoryController@Categories_store');
-Route::put('category_update/{id}', 'CategoryController@max_amount_update');
+Route::put('category_update/{id}/{user_id}', 'CategoryController@max_amount_update');
 
-Route::get('getUser/{id}', 'Auth\ApiAuthController@getUser');
+Route::get('getUser/{id}/{date}', 'Auth\ApiAuthController@getUser');
 Route::get('Transactions_show/{id}', 'UserController@Transactions_show');
 
 
@@ -78,6 +79,3 @@ Route::middleware('auth:api')->group(function () {
 });
 
  Route::post('/change-password/{email}', 'Auth\ApiAuthController@change_password')->name('change-password.api');
-
-
-

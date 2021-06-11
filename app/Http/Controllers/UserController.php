@@ -6,33 +6,44 @@ use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class UserController extends Controller
 {
 
     
-    public function Transactions_show(int $user_id){
+    public function Transactions_show(int $user_id,string $date){
   
    
-        return['Transactions'=> $this->Transactions($user_id)];
+        return['Transactions'=> $this->Transactions($user_id,$date)];
       
        }
 
-    public function  Transactions(int $user_id){
-        $i=Income::where('user_id',$user_id)->select('id',
+    public function  Transactions(int $user_id,string $date){
+        $i=Income::where('user_id',$user_id)->whereMonth('date',$date)->select('id',
         'description',
         'amount',
         'saving_amount',
         'monthly',
-        'date','category_id');
-        $e=Expense::where('user_id',$user_id)->select( 'id',
+        DB::raw('YEAR(date) AS year'),
+        DB::raw('MONTH(date) AS month'),
+        DB::raw('DAY(date) AS day'),
+        DB::raw('TIME(date) AS time'),
+        DB::raw('category_id-24*(user_id-1) AS category_id'),
+        );
+        $e=Expense::where('user_id',$user_id)->whereMonth('date',$date)->select( 'id',
         'description',
         'amount',
         'monthly',
         'user_id',
-        'date',
-        'category_id');
+        DB::raw('YEAR(date) AS year'),
+        DB::raw('MONTH(date) AS month'),
+        DB::raw('DAY(date) AS day'),
+        DB::raw('TIME(date) AS time'),
+        DB::raw('(category_id-24*(user_id-1)) AS category_id')
+       );
         
         $tran=$i->unionAll($e);
 
@@ -41,17 +52,22 @@ class UserController extends Controller
        'amount',
        'saving_amount',
        'monthly',
-       'date','category_id')->get();
+       DB::raw('YEAR(date) AS year'),
+       DB::raw('MONTH(date) AS month'),
+       DB::raw( 'DAY(date) AS day'),
+       DB::raw('TIME(date) AS time'),
+       DB::raw(' (category_id-24*(user_id-1)) AS category_id ')
+       )->get();
     }
 
-    public function user_show(User $user){
+    public function user_show(User $user,string $date){
         
         $cat=new CategoryController;
         
         $debts=new DebtsController;
         $s_goal= new SavingGoalController;
        
-        $tran=[$this->Transactions($user->id)];
+        $tran=[$this->Transactions($user->id,$date)];
         $user
         ->select(
            'id',

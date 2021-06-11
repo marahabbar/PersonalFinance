@@ -18,7 +18,7 @@ class ExpenseController extends Controller
     public function expense_show(int $id){
    
         return Expense::where('id',$id)
-        ->select(
+         ->select(
            'id',
            'description',
            'amount',
@@ -86,8 +86,8 @@ class ExpenseController extends Controller
                          'amount'=>$request->amount,
                          'monthly'=>$request->monthly,
                          'user_id'=>$request->user_id,
-                         'date'=>$request->date,
-                         'category_id'=>$request->category_id+(25*($request->user_id-1)),
+                         'date'=>$request->year.'-'.$request->month.'-'.$request->day.' '.$request->time,
+                         'category_id'=>$request->category_id+(24*($request->user_id-1)),
                          ]);
    
    // update balance && total expenses
@@ -96,7 +96,7 @@ class ExpenseController extends Controller
     User::find($request->user_id)->decrement('total_expenses',$difference);
 //update catogry
 Category::find($old_expense->category_id)->decrement('current_amount',$old_expense->amount);
-Category::find($request->category_id+(25*($request->user_id-1)))->increment('current_amount',$request->amount);
+Category::find($request->category_id+(24*($request->user_id-1)))->increment('current_amount',$request->amount);
 
 //return balance && total expenses.........
       
@@ -114,8 +114,8 @@ Category::find($request->category_id+(25*($request->user_id-1)))->increment('cur
              'amount'=>$request->amount,
              'monthly'=>$request->monthly,
              'user_id'=>$request->user_id,
-             'date'=>$request->date,
-             'category_id'=>$request->category_id+(25*($request->user_id-1)),
+             'date'=>$request->year.'-'.$request->month.'-'.$request->day.' '.$request->time,
+             'category_id'=>$request->category_id+(24*($request->user_id-1)),
              ]);
    
  //update balance 
@@ -123,7 +123,7 @@ Category::find($request->category_id+(25*($request->user_id-1)))->increment('cur
     User::find($request->user_id)->increment('total_expenses',$expense->amount);
  
  //current_amount// category
-    Category::find($request->category_id+(25*($request->user_id-1)))->increment('current_amount',$request->amount);
+    Category::find($request->category_id+(24*($request->user_id-1)))->increment('current_amount',$request->amount);
 // return new balance........
      
      return response()->json([new ExpenseRresource($expense) ,

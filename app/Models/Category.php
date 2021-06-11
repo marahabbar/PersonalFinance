@@ -14,7 +14,7 @@ class Category extends Model
         'type',
         'user_id'
     ];
-
+    
     public function incomes()
     {
         return $this->hasMany(income::class);
@@ -24,5 +24,9 @@ class Category extends Model
     {
         return $this->hasMany(expense::class);
     }
+
+   
+        
+      
  
 }

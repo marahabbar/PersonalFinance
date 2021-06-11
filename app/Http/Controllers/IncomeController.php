@@ -84,28 +84,18 @@ public function income_update(int $id,Request $request){
                       'saving_amount'=>$request->saving_amount,
                       'monthly'=>$request->monthly,
                       'user_id'=>$request->user_id,
-                      'category_id'=>$request->category_id+(25*($request->user_id-1)),
-                      'date'=>$request->date
+                      'category_id'=>$request->category_id+(24*($request->user_id-1)),
+                      'date'=>$request->year.'-'.$request->month.'-'.$request->day.' '.$request->time,
                       ]);
 
 // update balance && saving box
 User::find($request->user_id)->increment('balance',$balance_difference);
 User::find($request->user_id)->increment('total_saving_amount',$total_saving_amount_difference);
 User::find($request->user_id)->increment('total_incomes',$toltal_incomes_difference);
-/*
-User::where('id',$request->user_id)
-            ->update([
-              'balance'=>DB::raw('balance+$balance_difference'),
-              'total_saving_amount'=>DB::raw('total_saving_amount+$total_saving_amount_difference'),
-              'total_incomes'=>DB::raw('total_incomes+ $toltal_incomes_difference')
-                      ]);
-
-*/
-
 
 //update catogry
 Category::find($old_income->category_id)->decrement('current_amount',$old_income->amount);
-Category::find($request->category_id+(25*($request->user_id-1)))->increment('current_amount',$request->amount);
+Category::find($request->category_id+(24*($request->user_id-1)))->increment('current_amount',$request->amount);
 
 
 //return  new balance  ,saving amount......
@@ -129,8 +119,8 @@ Category::find($request->category_id+(25*($request->user_id-1)))->increment('cur
           'saving_amount'=>$request->saving_amount,
           'monthly'=>$request->monthly,
           'user_id'=>$request->user_id,
-          'date'=>$request->date,
-          'category_id'=>$request->category_id+(25*($request->user_id-1)),
+          'date'=>$request->year.'-'.$request->month.'-'.$request->day.' '.$request->time,,
+          'category_id'=>$request->category_id+(24*($request->user_id-1)),
        ]);
    $increase=$income->amount-$income->saving_amount;
 //update balance && saving box

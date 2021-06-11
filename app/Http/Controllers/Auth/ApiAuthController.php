@@ -11,7 +11,9 @@ use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\SavingGoalController;
 use App\Http\Controllers\UserController;
 use App\Models\Category;
+use App\Models\Debt;
 use App\Models\Expense;
+use App\Models\Income;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +23,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Mail\Message;
 use PhpParser\Node\Stmt\While_;
-
 class ApiAuthController extends Controller
 {
     public function register (Request $request) {
@@ -56,7 +57,7 @@ class ApiAuthController extends Controller
             $CategoryCon->category_store($Category,$user->id,2);
 
         }
-        $response = ['token' => $token,'user ID'=> $user->id ,'Category data'=> $CategoryCon->categories_show($user->id)];
+        $response = ['token' => $token,'id'=> $user->id ];
         return response()->json($response);
     }
     public function login (Request $request) {
@@ -75,7 +76,7 @@ class ApiAuthController extends Controller
                 $token = $user->createToken('Laravel Password Grant Client')->accessToken;
                 
                 $response = ['token' => $token,
-                            'data'=>$this->getUser($user->id)];
+                            'id'=>$user->id];
                 return response()->json($response);
             } else {
                 $response = ["message" => "Password mismatch"];
@@ -122,7 +123,8 @@ public function change_password(Request $request,$email)
    
 }
 
-public function getUser(int $id){
+public function getUser(int $id,string $date){
+    
  $user=new UserController;
  $user_info=User::find($id);
  $cat=new CategoryController;
@@ -130,24 +132,31 @@ public function getUser(int $id){
  $debts=new DebtsController;
  $s_goal= new SavingGoalController;
 
- $tran=$user->Transactions($id);
-
- $response=[
+ $total_income=Income::where('user_id',$user_info->id)->whereMonth('date',$date)->sum("amount");
+ $total_exp=Expense::where('user_id',$user_info->id)->whereMonth('date',$date)->sum("amount") ;
+ $total_lent=Debt::where('user_id',$user_info->id)->where('creditor',$user_info->email)->sum("amount");
+ $total_b=Debt::where('user_id',$user_info->id)->where('debtor',$user_info->email)->sum("amount");
+$tran=$user->Transactions($id,$date);
+$response=[
     'id'=>$user_info->id,
     'name'=>$user_info->name,
     'email'=>$user_info->email,
     'total_saving_amount'=>$user_info->total_saving_amount,
-    'balance'=>$user_info->balance,
-    'total_incomes'=>$user_info->total_incomes,
-    'total_expenses'=>$user_info->total_expenses,
+    'balance'=>($total_income-$total_exp),
+    'total_incomes'=> $total_income,
+    'total_expenses'=>$total_exp,
+    'lent'=> $total_lent,
+    'borrowed'=> $total_b,
     'Category'=>  $cat->categories_show($id),
     'Transactions'=>$tran,
     'Debts'=>$debts->debts_show($id),
     'Saving goals'=>$s_goal->saving_goals_show($id) ];
 
- //$response = [];
-        return response()->json($response);
+ 
+    
+ return response()->json($response);
 }
 
    
 }
+

@@ -61,7 +61,7 @@ class DebtsController extends Controller
        
        // update balance 
        $user=User::find($request->user_id) ;
-       if ($request->creditor==$user->name) {
+       if ($request->creditor==$user->email) {
            //amount
         User::find($request->user_id)->increment('balance',$difference);
         //rewind amount
@@ -92,7 +92,7 @@ class DebtsController extends Controller
 
        //update balance
        $user=User::find($request->user_id) ;
-       if ($request->creditor==$user->name) {
+       if ($request->creditor==$user->email) {
         User::find($request->user_id)->decrement('balance',$request->amount-$request->rewind_amount);
        } else {
         User::find($request->user_id)->increment('balance',$request->amount-$request->rewind_amount);
@@ -112,7 +112,7 @@ class DebtsController extends Controller
             $deleted_debt=Debt::find( $id);
             $user=User::find($deleted_debt->user_id) ;
 
-            if ($deleted_debt->creditor==$user->name) {
+            if ($deleted_debt->creditor==$user->email) {
              User::find($deleted_debt->user_id)->increment('balance',$deleted_debt->amount-$deleted_debt->rewind_amount);
             } else {
              User::find($deleted_debt->user_id)->decrement('balance',$deleted_debt->amount-$deleted_debt->rewind_amount);
