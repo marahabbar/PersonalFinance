@@ -6,6 +6,7 @@ use App\Http\Resources\DebtsRresource;
 use App\Models\Debt;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DebtsController extends Controller
 {
@@ -26,10 +27,10 @@ class DebtsController extends Controller
       
        }
        public function debts_show(int $user_id){
-   
-        return Debt::where('user_id',$user_id)
+        $user_info=User::find($user_id);
+        return DB::table('users')->join('debts', 'users.id', '=', 'debts.user_id')->where('family', $user_info->family)
         ->select(
-           'id',
+           'debts.id',
            'description',
            'amount',
            'rewind_amount',
@@ -93,8 +94,9 @@ class DebtsController extends Controller
        //update balance
        $user=User::find($request->user_id) ;
        if ($request->creditor==$user->email) {
-        User::find($request->user_id)->decrement('balance',$request->amount-$request->rewind_amount);
-       } else {
+         User::find($request->user_id)->decrement('balance',$request->amount-$request->rewind_amount);
+         echo $request->amount-$request->rewind_amount;
+        } else {
         User::find($request->user_id)->increment('balance',$request->amount-$request->rewind_amount);
        }
        

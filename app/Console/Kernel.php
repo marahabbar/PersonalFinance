@@ -27,12 +27,16 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->monthly();
         $schedule->call('App\Http\Controllers\UserController@reset')->monthly();
-        $schedule->call('App\Http\Controllers\UserController@MonthlyExpence')->monthly();
-        $schedule->call('App\Http\Controllers\UserController@MonthlyIncome')->monthly();
-        $schedule->call('App\Http\Controllers\UserController@DailyExpence')->daily();
-        $schedule->call('App\Http\Controllers\UserController@DailyIncome')->daily();
-        $schedule->call('App\Http\Controllers\UserController@WeekyExpence')->weekly();
-        $schedule->call('App\Http\Controllers\UserController@WeeklyIncome')->weekly();
+        $schedule->call('App\Http\Controllers\UserController@MonthlyExpence')->monthly()->at('6:00');
+        $schedule->call('App\Http\Controllers\UserController@MonthlyIncome')->monthly()->at('6:00');;
+        $schedule->call('App\Http\Controllers\UserController@DailyExpence')->dailyAt('6:00');
+        $schedule->call('App\Http\Controllers\UserController@DailyIncome')->dailyAt('6:00');
+        $schedule->call('App\Http\Controllers\UserController@WeeklyExpence')->weekly()->saturdays()->at('6:00');
+        $schedule->call('App\Http\Controllers\UserController@WeeklyIncome')->weekly()->saturdays()->at('6:00');
+        //$schedule->call('App\Http\Controllers\PushNotificationController@balance_notif')->dailyAt('6:00');
+        $schedule->call('App\Http\Controllers\PushNotificationController@category_notif')->dailyAt('6:00');
+        $schedule->call('App\Http\Controllers\PushNotificationController@debt_notif')->dailyAt('20:00');
+    
     }
 
     /**

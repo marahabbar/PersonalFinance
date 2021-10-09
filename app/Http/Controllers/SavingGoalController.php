@@ -6,6 +6,7 @@ use App\Http\Resources\SavingGoalsRresource;
 use App\Models\SavingGoal;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SavingGoalController extends Controller
 {
@@ -27,9 +28,10 @@ class SavingGoalController extends Controller
        }
        public function saving_goals_show(int $user_id){
    
-        return SavingGoal::where('user_id',$user_id)
-        ->select(
-           'id',
+        $user_info=User::find($user_id);
+        return DB::table('users')->join('saving_goals', 'users.id', '=', 'saving_goals.user_id')->where('family', $user_info->family)
+         ->select(
+           'saving_goals.id',
            'description',
            'target_amount',
            'current_amount',
@@ -46,21 +48,20 @@ class SavingGoalController extends Controller
         SavingGoal::where('id',$id)
                   ->update(['description'=>$request->description,
                             'target_amount'=>$request->target_amount,
-                           // 'user_id'=>$request->user_id,
                             'end_date'=>$request->end_date,
                             'start_date'=>$request->start_date
                             ]); 
                             
  // update total saving amount
 
- if (User::find($request->user_id)->total_saving_amount-$amount_difference>=0) {
+if (User::find($request->user_id)->total_saving_amount-$amount_difference>=0) {
     User::find($request->user_id)->decrement('total_saving_amount',$amount_difference);
     SavingGoal::where('id',$id)
                   ->update(['current_amount'=>$request->current_amount]); 
  return response()->json([$this->saving_goal_show( $id),
                   User::where('id', $request->user_id)->select('total_saving_amount')->get()]);
  } else {
-    return response()->json([$this->saving_goal_show( $id)])  ;   
+    return response()->json(["msg"=>"fail to update"])  ;   
  }
  
 
@@ -95,8 +96,6 @@ public function saving_goal_delete(int $id){
     SavingGoal::where('id',$id)
     ->delete();
     
-
-// update 
 
       return response()->json([ User::where('id', $deleted_saving_goal->user_id)->select('total_saving_amount')->get()]);
   

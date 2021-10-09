@@ -20,6 +20,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+Route::middleware( 'auth:api')->group(function () {
 Route::namespace('App\Http\Controllers')->group(function () {
 Route::apiResource('incomes','IncomeController');
 Route::get('income_show/{id}', 'IncomeController@income_show');
@@ -39,12 +41,12 @@ Route::post('expense_store', 'ExpenseController@expense_store');
 Route::put('expense_update/{id}', 'ExpenseController@expense_update');
 Route::delete('expense_delete/{id}', 'ExpenseController@expense_delete');
 
-Route::apiResource('debts','DebtController');
-Route::get('debt_show/{id}', 'DebtController@debt_show');
-Route::get('debts_show/{user_id}', 'DebtController@debts_show');
-Route::post('debt_store', 'DebtController@debt_store');
-Route::put('debt_update/{id}', 'DebtController@debt_update');
-Route::delete('debt_delete/{id}', 'DebtController@debt_delete');
+Route::apiResource('debts','DebtsController');
+Route::get('debt_show/{id}', 'DebtsController@debt_show');
+Route::get('debts_show/{user_id}', 'DebtsController@debts_show');
+Route::post('debt_store', 'DebtsController@debt_store');
+Route::put('debt_update/{id}', 'DebtsController@debt_update');
+Route::delete('debt_delete/{id}', 'DebtsController@debt_delete');
 
 Route::apiResource('saving_goals','SavingGoalController');
 Route::get('saving_goal_show/{id}', 'SavingGoalController@saving_goal_show');
@@ -58,24 +60,33 @@ Route::get('category_show/{id}', 'CategoryController@Category_show');
 Route::get('categories_show/{user_id}', 'CategoryController@Categories_show');
 Route::put('category_update/{id}/{user_id}', 'CategoryController@max_amount_update');
 
-Route::get('getUser/{id}/{date}', 'Auth\ApiAuthController@getUser');
+Route::get('getUser/{id}/{date}', 'UserController@getUser');
 Route::get('Transactions_show/{id}', 'UserController@Transactions_show');
+Route::post('FrequencyTransaction', 'UserController@frqTran');
+Route::post('FamilyMemberRequest', 'UserController@AddFamilyMemberRequest');
+Route::post('AddFamilyMember', 'UserController@AddFamilyMember');
+Route::post('FCM', 'UserController@FCM');
+Route::get('Notifications/{id}', 'PushNotificationController@user_notification');
+Route::post('deleteAccount', 'UserController@deleteAccount');
 
+Route::post('logout', 'AuthController@logout');
 
 });
+});
+
+
 Route::group(['middleware' => ['cors', 'json.response']], function () {
     Route::namespace('App\Http\Controllers')->group(function () {
-    Route::post('/login', 'Auth\ApiAuthController@login')->name('login.api');
+    Route::post('/login', 'AuthController@login')->name('login.api');
 
-    Route::post('/register', 'Auth\ApiAuthController@register')->name('register.api');
+    Route::post('register', 'AuthController@register');
     
     });
 });
 
-Route::middleware('auth:api')->group(function () {
+// Route::middleware('auth:api')->group(function () {
+//     Route::namespace('App\Http\Controllers')->group(function () {
+  
+//     });
+// });
 
-    Route::post('/logout', 'Auth\ApiAuthController@logout')->name('logout.api');
-
-});
-
- Route::post('/change-password/{email}', 'Auth\ApiAuthController@change_password')->name('change-password.api');

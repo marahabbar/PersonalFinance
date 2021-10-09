@@ -23,7 +23,8 @@ class CreateUsersTable extends Migration
             $table->float('balance');
             $table->float('total_incomes');
             $table->float('total_expenses');
-            //$table->blob('img');
+            $table->bigInteger('family');
+            $table->string('FCM_token');
             $table->rememberToken();
             $table->timestamps();
         });

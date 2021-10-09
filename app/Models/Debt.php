@@ -15,6 +15,7 @@ class Debt extends Model
         'debtor',
         'debt_date',
         'due_date',
+        'user_id'
     ];
     
     public function user()
