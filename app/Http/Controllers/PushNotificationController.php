@@ -45,7 +45,7 @@ class PushNotificationController extends Controller
        
         $fields = json_encode($arrayToSend);
         $headers = array(
-            'Authorization: key=' . "AAAAJGgy7jY:APA91bFSLCSuEsasW8FiY3J79x-yDBdDEs7Ri3wE9m0QnsRwsbwG-Df2EphaGMaKQ0EHF6g2LwSsND_mXJ9ufgI_gQlUcqzzmEyFPzLBgC9cCk8PhjDffRwxSIX2Vq0oUQHc843xDIBB",
+            'Authorization: key=' . "server key",
             'Content-Type: application/json'
         );
 
